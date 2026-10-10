@@ -257,6 +257,14 @@ button.danger { background: var(--yellow); color: var(--ink); box-shadow: 0 6px 
 button.danger:hover { background: #ffe56b; }
 button.danger:active { box-shadow: 0 2px 0 var(--yellow-deep); }
 
+.link-btn { background: none; border: none; box-shadow: none; color: var(--blue-dark); font: inherit; font-weight: 700; text-decoration: underline; padding: 0; cursor: pointer; }
+
+.dialog-cuenta { width: min(92vw, 480px); border: none; border-radius: var(--radius-md); padding: 1.25rem; background: var(--white); color: var(--ink); }
+.dialog-cuenta::backdrop { background: rgba(5, 28, 44, 0.45); }
+.dialog-cabecera { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; }
+.dialog-cabecera h2 { margin: 0; }
+.dialog-cabecera button { background: none; color: var(--ink); box-shadow: none; padding: 0.25rem 0.6rem; }
+
 /* Avisos */
 .hint, .disclaimer {
   color: var(--muted);

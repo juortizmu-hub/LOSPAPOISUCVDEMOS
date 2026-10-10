@@ -1,25 +1,405 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Harvey Aquini</title>
-  <style>
-    body { font-family: Calibri, Arial, sans-serif; margin: 0; background: #f7fafc; color: #1f2d3d; text-align: center; padding: 80px 24px; }
-    h1 { color: #051c2c; font-size: 2.4rem; }
-    p { font-size: 1.2rem; }
-    .boton-comenzar { margin-top: 32px; padding: 14px 36px; font-size: 1.1rem; font-family: inherit; color: #ffffff; background: #1e6fd9; border: none; border-radius: 8px; cursor: pointer; }
-    .boton-comenzar:hover { background: #1858b0; }
-  </style>
-</head>
-<body>
-  <h1>Harvey Aquini</h1>
-  <p>Hackathon de Salud Mental con IA · UCV</p>
-  <p>Pídele a Claude que cambie esta página.</p>
-  <p id="fecha-actual"></p>
-  <button class="boton-comenzar">Comenzar</button>
-  <script>
-    document.getElementById('fecha-actual').textContent = new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-  </script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Amigo UCV · Salud mental</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css?v=19" />
+  </head>
+  <body>
+    <!-- Estrellas y planetas decorativos que cruzan la pantalla (no interactivos) -->
+    <div class="space-drift" aria-hidden="true">
+      <span class="drift drift-star s1">⭐</span>
+      <span class="drift drift-star s2">✨</span>
+      <span class="drift drift-star s3">⭐</span>
+      <span class="drift drift-star s4">✨</span>
+      <span class="drift drift-star s5">⭐</span>
+      <span class="drift drift-planet p1"></span>
+      <span class="drift drift-planet p2"></span>
+      <span class="drift drift-planet p3"></span>
+      <span class="drift drift-banana b1">🍌</span>
+      <span class="drift drift-banana b2">🍌</span>
+    </div>
+    <div class="layout">
+      <aside class="sidebar">
+        <div class="brand">Amigo UCV</div>
+        <button type="button" id="menu-toggle" class="menu-toggle" aria-expanded="false" aria-controls="main-nav">
+          <span aria-hidden="true">☰</span> Menú <span class="menu-arrow" aria-hidden="true">⌄</span>
+        </button>
+        <nav id="main-nav">
+          <button class="nav-item active" data-view="muro">Muro de posts</button>
+          <button class="nav-item" data-view="inicio">Inicio</button>
+          <button class="nav-item" data-view="chat">Chat privado</button>
+          <button class="nav-item" data-view="notificaciones">🔔 Notificaciones <span id="nav-badge" class="nav-badge" hidden></span></button>
+          <button class="nav-item" data-view="perfil">Mi perfil</button>
+          <button class="nav-item" data-view="animo">Mi estado de ánimo</button>
+          <button class="nav-item" data-view="vision">Visión board</button>
+          <button class="nav-item" data-view="personaje">Mi personaje 🍌</button>
+          <hr />
+          <button class="nav-item" data-view="apoyo">Apoyo profesional</button>
+          <button class="nav-item" data-view="academico">Guía académica</button>
+          <button class="nav-item" data-view="config">Configuración / Otros recursos</button>
+          <button type="button" id="abrir-cuenta" class="nav-item">👤 Cuenta</button>
+        </nav>
+      </aside>
+
+      <main class="content">
+        <!-- Página de bienvenida -->
+        <section id="view-inicio" class="view active">
+          <div class="hero-decor" aria-hidden="true">
+            <span>🍌</span><span>⭐</span><span>☁️</span><span>🍌</span>
+          </div>
+          <h1>Bienvenido a Amigo UCV</h1>
+
+          <section class="progreso-card card" aria-labelledby="pc-titulo">
+            <h2 id="pc-titulo">💙 Mi compañero UCV</h2>
+            <div class="pc-cuerpo">
+              <div id="pc-personaje" class="pc-personaje" role="img" aria-label="Tu personaje"></div>
+              <div class="pc-info">
+                <p id="pc-personaje-nombre" class="pc-personaje-nombre"></p>
+                <p id="pc-nivel" class="pc-nivel"></p>
+                <p id="pc-xp" class="pc-xp"></p>
+                <div id="pc-barra" class="pc-barra" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Progreso al siguiente nivel">
+                  <span id="pc-relleno"></span>
+                </div>
+                <p id="pc-porcentaje" class="hint pc-porcentaje">0 %</p>
+                <p id="pc-racha" class="pc-racha"></p>
+                <blockquote id="pc-mensaje" class="pc-mensaje"></blockquote>
+                <p id="pc-recompensa" class="pc-recompensa"></p>
+                <button type="button" id="pc-cofre" class="pc-cofre" hidden>🎁 Abrir cofre</button>
+                <p id="pc-cofre-estado" class="hint" role="status"></p>
+                <p id="pc-aviso" class="hint"></p>
+                <p class="hint">💬 Cada emoción merece ser escuchada.</p>
+                <button type="button" id="pc-compartir">💙 Compartir cómo me siento</button>
+              </div>
+            </div>
+          </section>
+          <p>Un espacio pensado para ti, estudiante de la Universidad César Vallejo. Aquí puedes hablar en privado, registrar cómo te sientes y compartir con la comunidad, de forma pública o anónima.</p>
+
+          <h2>Síguenos en redes de la UCV</h2>
+          <ul class="social-links">
+            <li><a href="https://www.ucv.edu.pe/" target="_blank" rel="noopener">Sitio web oficial</a></li>
+            <li><a href="https://www.instagram.com/ucvenezuela/" target="_blank" rel="noopener">Instagram</a></li>
+            <li><a href="https://x.com/ucvenezuela" target="_blank" rel="noopener">X (Twitter)</a></li>
+            <li><a href="https://www.facebook.com/UniversidadCentraldeVenezuela" target="_blank" rel="noopener">Facebook</a></li>
+            <li><a href="https://www.youtube.com/@ucvenezuela" target="_blank" rel="noopener">YouTube</a></li>
+          </ul>
+        </section>
+
+        <!-- Chat privado -->
+        <section id="view-chat" class="view">
+          <h1>Chat privado</h1>
+          <p class="hint">Conversación confidencial. Los mensajes no se guardan en el servidor ni se almacenan al recargar la página.</p>
+          <div id="chat-log" class="chat-log" aria-live="polite"></div>
+          <form id="chat-form" class="chat-form">
+            <input id="chat-input" type="text" placeholder="Escribe lo que quieras compartir..." maxlength="1000" required />
+            <button type="submit">Enviar</button>
+          </form>
+        </section>
+
+        <!-- Muro de posts -->
+        <section id="view-muro" class="view">
+          <h1>Muro de posts</h1>
+          <p id="social-status" class="hint" role="status"></p>
+
+          <form id="buscar-form" class="row buscar-form" role="search">
+            <input id="buscar-input" type="text" maxlength="50" placeholder="Buscar personas o publicaciones" aria-label="Buscar" />
+            <button type="submit">Buscar</button>
+          </form>
+          <div id="buscar-resultados"></div>
+
+          <form id="post-form" class="card">
+            <textarea id="post-text" rows="3" maxlength="500" placeholder="¿Qué quieres compartir?" required></textarea>
+            <div class="row">
+              <label>Emoción
+                <select id="post-emotion">
+                  <option>Esperanza</option>
+                  <option>Calma</option>
+                  <option>Gratitud</option>
+                  <option>Ansiedad</option>
+                  <option>Tristeza</option>
+                  <option>Motivación</option>
+                </select>
+              </label>
+              <label>Visibilidad
+                <select id="post-visibility">
+                  <option value="publico">Público</option>
+                  <option value="privado">Privado</option>
+                </select>
+              </label>
+              <label>Identidad
+                <select id="post-identity">
+                  <option value="anonimo">Anónimo</option>
+                  <option value="ficticio">Apodo de mi perfil</option>
+                  <option value="perfil">Mi nombre (perfil)</option>
+                </select>
+              </label>
+            </div>
+            <label class="post-image-label">Imagen (opcional, máx. 2 MB)
+              <input id="post-image" type="file" accept="image/*" />
+            </label>
+            <p id="post-login-aviso" class="hint">Inicia sesión para publicar. <button type="button" class="link-btn" id="abrir-cuenta-aviso">Iniciar sesión</button></p>
+            <div class="row">
+              <button type="submit">Publicar</button>
+              <span id="post-status" class="hint" role="status"></span>
+            </div>
+          </form>
+
+          <h2>Publicaciones</h2>
+          <div id="feed"></div>
+        </section>
+
+        <!-- Estado de ánimo -->
+        <section id="view-animo" class="view">
+          <h1>Mi estado de ánimo</h1>
+          <form id="mood-form" class="card">
+            <p>¿Cómo te sientes hoy?</p>
+            <div class="row">
+              <label><input type="radio" name="mood" value="1" required /> Muy mal</label>
+              <label><input type="radio" name="mood" value="2" /> Mal</label>
+              <label><input type="radio" name="mood" value="3" /> Regular</label>
+              <label><input type="radio" name="mood" value="4" /> Bien</label>
+              <label><input type="radio" name="mood" value="5" /> Muy bien</label>
+            </div>
+            <textarea id="mood-note" rows="2" maxlength="300" placeholder="Nota opcional"></textarea>
+            <button type="submit">Registrar</button>
+          </form>
+          <h2>Historial</h2>
+          <ul id="mood-history" class="list"></ul>
+        </section>
+
+        <!-- Visión board -->
+        <section id="view-vision" class="view">
+          <h1>Visión board</h1>
+          <p class="hint">Escribe metas, frases o cosas que quieres lograr.</p>
+          <form id="vision-form" class="row">
+            <input id="vision-text" type="text" maxlength="200" placeholder="Nueva meta o sueño" required />
+            <button type="submit">Añadir</button>
+          </form>
+          <div id="vision-board" class="vision-grid"></div>
+        </section>
+
+        <!-- Notificaciones: actividad real sobre tus publicaciones -->
+        <section id="view-notificaciones" class="view">
+          <h1>Notificaciones</h1>
+          <ul id="notificaciones-lista" class="list"></ul>
+        </section>
+
+        <!-- Perfil de usuario: foto, nombre, descripción y publicaciones -->
+        <section id="view-perfil" class="view">
+          <h1>Mi perfil</h1>
+          <div id="perfil-contenido"><p class="hint">Inicia sesión para ver tu perfil.</p></div>
+        </section>
+
+        <!-- Mi personaje: galería, emociones, accesorios y colores -->
+        <section id="view-personaje" class="view">
+          <h1>Mi personaje</h1>
+          <p class="hint">Elige un modelo, una emoción y un accesorio. La vista previa se actualiza al instante.</p>
+          <div class="pj-layout">
+            <div class="card pj-preview-card">
+              <div id="pj-preview" class="pj-preview" role="img" aria-label="Vista previa de tu personaje"></div>
+              <p id="pj-nombre" class="pj-nombre"></p>
+            </div>
+
+            <div class="pj-controles">
+              <h2>Modelo</h2>
+              <div id="pj-galeria" class="pj-galeria"></div>
+
+              <h2>Emoción</h2>
+              <div id="pj-emociones" class="pj-chips"></div>
+
+              <h2>Accesorio</h2>
+              <div id="pj-accesorios" class="pj-chips"></div>
+
+              <h2>Colores</h2>
+              <div class="row">
+                <label>Cuerpo <input id="pj-cuerpo" type="color" value="#fdd835" /></label>
+                <label>Detalles <input id="pj-detalle" type="color" value="#1e63c9" /></label>
+              </div>
+
+              <h2>Nombre</h2>
+              <input id="pj-nombre-personaje" type="text" maxlength="20" placeholder="Lunito" aria-label="Nombre de tu personaje" />
+
+              <h2>Fondo</h2>
+              <div id="pj-fondos" class="pj-chips"></div>
+
+              <h2>Efecto</h2>
+              <div id="pj-efectos" class="pj-chips"></div>
+
+              <div class="row pj-acciones">
+                <button type="button" id="pj-guardar">Guardar personaje</button>
+                <button type="button" id="pj-aleatorio">Personaje aleatorio</button>
+                <button type="button" id="pj-restablecer" class="danger">Restablecer</button>
+              </div>
+              <p id="pj-estado" class="hint" role="status"></p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Apoyo profesional -->
+        <section id="view-apoyo" class="view">
+          <h1>Apoyo profesional</h1>
+          <p>Si necesitas hablar con un profesional, acude al servicio de orientación o bienestar estudiantil de tu facultad.</p>
+          <p class="disclaimer">En caso de emergencia, llama al 911.</p>
+          <ul class="social-links">
+            <li><a href="https://wa.me/51993397208" target="_blank" rel="noopener">Escribir por WhatsApp</a></li>
+          </ul>
+          <div style="margin-top: 1.25rem;">
+            <a href="https://tu-enlace.com" class="refugio-btn" aria-label="Ir a Refugio del Corazón">
+              <span class="btn-icon">💛</span>
+              <span class="btn-text">
+                <strong>Refugio del Corazón</strong>
+                <small>Conexión • Reducción del estigma • Accesibilidad</small>
+              </span>
+            </a>
+          </div>
+        </section>
+
+        <!-- Guía académica -->
+        <section id="view-academico" class="view">
+          <h1>Guía académica</h1>
+          <p class="hint">Organizador con IA: sube tu ficha de matrícula y los sílabos de tus cursos. Te diremos qué estudiar en cada etapa del ciclo y qué entregas tienes.</p>
+
+          <div class="guia-layout">
+            <aside class="guia-sidebar" aria-label="Secciones de la guía">
+              <button type="button" class="guia-link active" data-panel="carga">📎 Zona de carga</button>
+              <button type="button" class="guia-link" data-panel="cronograma">🗓️ Cronograma de estudio</button>
+              <button type="button" class="guia-link" data-panel="tareas">✅ Gestor de tareas</button>
+            </aside>
+
+            <div class="guia-main">
+              <div id="panel-carga" class="guia-panel active">
+                <div class="card">
+                  <h2>Ficha de matrícula</h2>
+                  <label class="guia-file">Sube tu ficha (PDF o texto)
+                    <input id="guia-matricula" type="file" accept=".pdf,.txt,text/plain,application/pdf" />
+                  </label>
+                  <ul id="guia-cursos-detectados" class="list"></ul>
+                </div>
+
+                <div class="card">
+                  <h2>Sílabos de tus cursos</h2>
+                  <div id="guia-silabos"></div>
+                </div>
+
+                <p id="guia-status" class="hint" role="status"></p>
+                <p class="hint">⚠️ Los documentos se envían a la IA para analizarlos. Sube solo lo necesario y quita tus datos personales antes de subirlo.</p>
+              </div>
+
+              <div id="panel-cronograma" class="guia-panel">
+                <h2>Cronograma de estudio</h2>
+                <p class="hint">Las unidades se reparten a lo largo de las 16 semanas del ciclo.</p>
+                <div id="guia-cronograma"></div>
+              </div>
+
+              <div id="panel-tareas" class="guia-panel">
+                <h2>Gestor de tareas</h2>
+                <div id="guia-tareas"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Configuración -->
+        <section id="view-config" class="view">
+          <h1>Configuración / Otros recursos</h1>
+          <h2>Reglas de convivencia</h2>
+          <div class="card">
+            <p>En Amigo UCV queremos un lugar seguro para todas las personas. Por eso:</p>
+            <ul>
+              <li>No se permiten insultos, acoso, amenazas ni discriminación.</li>
+              <li>No se permiten burlas sobre los sentimientos o problemas de los demás.</li>
+              <li>Si algo te parece dañino, usa el botón <strong>Reportar</strong> en la publicación.</li>
+              <li>Si tú estás pasando por un momento difícil, puedes escribirlo en el chat privado o buscar apoyo profesional. Aquí siempre habrá alguien que te escuche.</li>
+            </ul>
+          </div>
+
+          <h2>Mi personaje</h2>
+          <div class="card">
+            <div id="avatar-preview" class="avatar-preview" role="img" aria-label="Vista previa de tu personaje"></div>
+            <form id="avatar-form" class="card">
+              <label>Forma
+                <select id="avatar-shape">
+                  <option value="redondo">Redondito</option>
+                  <option value="alto">Alto</option>
+                  <option value="pequeno">Pequeño</option>
+                </select>
+              </label>
+              <label>Color del cuerpo
+                <input id="avatar-body" type="color" value="#fdd835" />
+              </label>
+              <label>Color de la ropa
+                <input id="avatar-cloth" type="color" value="#1e63c9" />
+              </label>
+              <label>Color del cabello
+                <input id="avatar-hair" type="color" value="#1d2a36" />
+              </label>
+              <button type="submit">Guardar personaje</button>
+            </form>
+          </div>
+
+          <h2>Perfiles y apodos</h2>
+          <p class="hint">Crea perfiles con un apodo. El perfil activo se usa cuando publicas con nombre ficticio.</p>
+          <form id="profile-form" class="card">
+            <label>Género
+              <select id="profile-gender">
+                <option value="hombre">Hombre</option>
+                <option value="mujer">Mujer</option>
+              </select>
+            </label>
+            <label>Apodo
+              <input id="profile-alias" type="text" maxlength="30" placeholder="Ej. Estudiante Estrella" required />
+            </label>
+            <div class="row">
+              <button type="submit">Crear perfil</button>
+              <button type="button" id="profile-auto">Generar perfil automático</button>
+            </div>
+          </form>
+          <ul id="profile-list" class="list"></ul>          <button id="clear-data" class="danger">Borrar mis datos guardados</button>
+          <h2>Otros recursos</h2>
+          <ul class="social-links">
+            <li><a href="https://www.ucv.edu.pe/" target="_blank" rel="noopener">Sitio web de la UCV</a></li>
+          </ul>
+        </section>
+      </main>
+    </div>
+    <dialog id="dialog-cuenta" class="dialog-cuenta">
+      <div class="dialog-cabecera">
+        <h2>Mi cuenta</h2>
+        <button type="button" id="cerrar-cuenta" aria-label="Cerrar">✕</button>
+      </div>
+      <div class="card" id="auth-card">
+        <form id="auth-form" class="row">
+          <input id="auth-email" type="text" inputmode="email" autocomplete="email" placeholder="Correo" />
+          <input id="auth-password" type="password" autocomplete="current-password" placeholder="Contraseña (mín. 6)" />
+          <button type="button" id="auth-login">Entrar</button>
+          <button type="button" id="auth-register" class="danger">Crear cuenta</button>
+        </form>
+        <div id="auth-sesion" class="row" hidden>
+          <span id="auth-usuario"></span>
+          <button type="button" id="auth-logout" class="danger">Cerrar sesión</button>
+        </div>
+        <p id="auth-status" class="hint" role="status"></p>
+      </div>
+    </dialog>
+    <script src="app.js"></script>
+    <script src="personaje.js"></script>
+    <script src="progreso.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <script src="supabase-config.js"></script>
+    <script src="social.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
+    <script>
+      const dialogoCuenta = document.getElementById("dialog-cuenta");
+      document.querySelectorAll("#abrir-cuenta, #abrir-cuenta-aviso").forEach((b) => b.addEventListener("click", () => dialogoCuenta.showModal()));
+      document.getElementById("cerrar-cuenta").addEventListener("click", () => dialogoCuenta.close());
+    </script>
+    <script>
+      if (window.pdfjsLib) window.pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js";
+    </script>
+    <script src="guia.js"></script>
+  </body>
 </html>

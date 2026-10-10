@@ -70,7 +70,7 @@ function showView(name) {
   document.body.dataset.view = name;
 }
 showView("muro"); // entrada directa al muro de publicaciones
-document.querySelectorAll(".nav-item").forEach((btn) =>
+document.querySelectorAll(".nav-item[data-view]").forEach((btn) =>
   btn.addEventListener("click", () => {
     showView(btn.dataset.view);
     setMenuOpen(false); // al elegir una sección, el menú se cierra solo
